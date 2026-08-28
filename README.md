@@ -1,101 +1,113 @@
-# 📊 Telecom Customer Churn Prediction using XGBoost & Optuna
+# 📊 Telecom Customer Churn Prediction
 
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-1.7+-FF6F00?logo=xgboost&logoColor=white)](https://xgboost.readthedocs.io/)
-[![Optuna](https://img.shields.io/badge/Optuna-3.0+-1F618D?logo=optuna&logoColor=white)](https://optuna.org/)
-[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.2+-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-
-An end-to-end, production-grade machine learning pipeline designed to predict customer churn using the **IBM Telco Customer Churn dataset**. The project leverages a modular Scikit-Learn preprocessing pipeline, XGBoost classification, and hyperparameter optimization with Optuna to deliver highly generalizable and business-actionable churn predictions.
+A production‑grade machine‑learning pipeline that predicts customer churn for the IBM Telco Customer Churn dataset. The project demonstrates end‑to‑end data processing, feature engineering, model training with XGBoost, and hyper‑parameter optimisation using Optuna.
 
 ---
 
-## 🚀 Key Highlights & Engineering Practices
-* **Production-Grade Pipelines**: Clean separation of feature preprocessing steps using Scikit-Learn's `Pipeline` and `ColumnTransformer` to completely eliminate data leakage.
-* **Custom Preprocessing Transformers**: Implemented modular, OOP-based custom transformers (`BaseEstimator` and `TransformerMixin`) for type coercion and logical data cleaning.
-* **Hyperparameter Optimization**: Used **Optuna** to run Bayesian optimization (TPE sampler) over the XGBoost hyperparameter space, significantly boosting metrics over baseline models.
-* **Class Imbalance Handling**: Addressed the ~72/28 class imbalance by optimizing classification decision thresholds and monitoring F1-score and ROC-AUC rather than raw accuracy alone.
+## 🚀 Project Overview
+
+- **Data** – 7043 rows of customer information (demographics, services, usage, etc.)
+- **Goal** – Predict the `Churn` column (Yes/No)
+- **Model** – XGBoost Classifier tuned with Optuna (TPE sampler)
+- **Pipeline** – Scikit‑Learn `Pipeline` + `ColumnTransformer` for clean, leak‑free preprocessing
+- **Performance** – ROC‑AUC 86.3 %, Accuracy 80.3 % (tuned) vs. 77.4 % (baseline)
 
 ---
 
-## 📈 Model Performance & Business Impact
+## 🛠️ Tech Stack
 
-Through rigorous feature inclusion (incorporating regional customer data) and hyperparameter tuning, the model performance was improved significantly:
-
-| Metric | Baseline Model | Optuna-Tuned Model | Absolute Improvement |
-| :--- | :---: | :---: | :---: |
-| **Accuracy Score** | 77.43% | **80.27%** | **+2.84%** 📈 |
-| **ROC AUC Score** | 83.79% | **86.27%** | **+2.48%** 📈 |
-| **Churn Recall (Sensitivity)** | 49.50% | **55.25%** | **+5.75%** 📈 *(Caught 23 more actual churners)* |
-| **Churn Precision** | 63.06% | **69.06%** | **+6.00%** 📈 *(Fewer false alarms / wasted retention budget)* |
-| **F1-Score (Balanced)** | 55.46% | **61.38%** | **+5.92%** 📈 |
-
-* **Business Value**: By reducing False Positives (FP) by 17 and False Negatives (FN) by 23 on the test set alone, this model directly minimizes customer acquisition costs and maximizes the efficiency of targeted customer retention campaigns.
+| Library | Purpose |
+|---------|---------|
+| `pandas` | Data manipulation |
+| `numpy` | Numerical operations |
+| `scikit‑learn` | Pre‑processing, model evaluation |
+| `xgboost` | Gradient‑boosted trees |
+| `optuna` | Bayesian hyper‑parameter optimisation |
+| `openpyxl` | Read the original Excel dataset |
+| `matplotlib` / `seaborn` | Visualisation |
 
 ---
 
-## 🛠️ Tech Stack & Libraries
-* **Core Logic & Modeling**: `scikit-learn`, `xgboost`, `optuna`
-* **Data Processing**: `pandas`, `numpy`, `openpyxl` (Excel dataset parser)
-* **Visualization**: `seaborn`, `matplotlib`
+## 📦 Installation
 
----
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/telecom-churn.git
+cd telecom-churn
 
-## 📐 Pipeline Architecture
+# 2. Create a virtual environment (recommended)
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-The end-to-end modeling pipeline is structured as follows:
-
-```mermaid
-graph TD
-    A[Raw Excel Data] --> B[Custom Converter Transformer]
-    B -->|Coerces Data Types & Cleans Blanks| C[Column Transformer]
-    
-    C -->|One-Hot Encoding| D[Categorical Pipeline]
-    C -->|Ordinal Encoding| E[Contract Pipeline]
-    C -->|Standard Scaling & Median Imputation| F[Numerical Pipeline]
-    
-    D --> G[XGBoost Classifier]
-    E --> G
-    F --> G
-    
-    G --> H[Optuna Bayesian Search]
-    H --> I[Final Tuned Model & Probabilistic Thresholding]
+# 3. Install dependencies
+pip install -r requirements.txt
 ```
 
-### 1. Data Processing Details
-* **Numerical Features** (`Latitude`, `Longitude`, `Tenure Months`, `Monthly Charges`, `Total Charges`): Scaled using `StandardScaler` and imputed using `SimpleImputer` (median strategy) to handle empty total charges (specifically for new sign-ups with 0 tenure).
-* **High-Cardinality Categoricals** (`City`): Retained and one-hot encoded along with other user demographic and service features (e.g., `Internet Service`, `Payment Method`) to capture geographical churn trends.
-* **Ordinal Features** (`Contract`): Encoded mapping `Month-to-month` $\rightarrow$ `One year` $\rightarrow$ `Two year` to capture the inherent risk relationship of contract lengths.
+> **Tip** – If you don’t have a `requirements.txt`, install the packages manually:
+> ```bash
+> pip install pandas numpy scikit-learn xgboost optuna openpyxl matplotlib seaborn
+> ```
 
 ---
 
-## 💻 Installation & Setup
+## 📓 Usage
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/Churn-Rate-IBM-XGBOOST.git
-   cd Churn-Rate-IBM-XGBOOST
-   ```
+The main notebook `code/churnRate.ipynb` contains the full pipeline. To run it locally:
 
-2. **Set up Virtual Environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use: venv\Scripts\activate
-   ```
+```bash
+jupyter notebook code/churnRate.ipynb
+```
 
-3. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *(Note: Ensure you have `pandas`, `xgboost`, `optuna`, `scikit-learn`, and `openpyxl` installed).*
+### Quick‑start from the command line
+You can also run the pipeline as a script (after adding a `main.py` wrapper). For example:
 
-4. **Run the Notebook**
-   ```bash
-   jupyter notebook code/churnRate.ipynb
-   ```
+```bash
+python -m code.churnRate --data path/to/telecom.xlsx
+```
+
+The script will:
+1. Load the Excel file.
+2. Pre‑process the data.
+3. Train an XGBoost model with Optuna tuning.
+4. Output evaluation metrics and a `model.pkl` file.
 
 ---
 
-## 📝 Future Scope & Planned Improvements
-* **Target Encoding**: Replace one-hot encoding for high-cardinality `City` features with Target Encoding to reduce dimensionality and speed up training.
-* **Threshold Tuning**: Automate the selection of decision thresholds to maximize the F1-score or prioritize Recall depending on business retention budget.
-* **Advanced Feature Engineering**: Create features like `Active Services Count` (sum of subscribed telecom services) and billing ratios to capture additional customer behavior.
+## 📈 Model Evaluation
+
+| Metric | Baseline | Tuned | Δ |
+|--------|----------|-------|---|
+| Accuracy | 77.4 % | 80.3 % | +2.9 % |
+| ROC‑AUC | 83.8 % | 86.3 % | +2.5 % |
+| F1‑Score | 55.5 % | 61.4 % | +5.9 % |
+
+> The tuned model uses a decision threshold of 0.35 (optimised for F1‑score). Adjust `threshold` in `code/churnRate.ipynb` for different business trade‑offs.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork** the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature`.
+3. Commit your changes with clear messages.
+4. Push to your fork and open a Pull Request.
+5. Ensure all tests pass (if any) and the notebook renders correctly.
+
+### Code Style
+- Use `black` for formatting.
+- Add type hints where appropriate.
+- Keep notebooks tidy – remove unused cells and add markdown explanations.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📬 Contact
+
+For questions or support, open an issue or reach out to `your.email@example.com`.
